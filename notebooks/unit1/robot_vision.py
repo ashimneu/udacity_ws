@@ -8,3 +8,4 @@ import matplotlib.pyplot as plt
 filename = '/home/ashim/Downloads/sample.jpg'
 image = mpimg.imread(filename)
 plt.imshow(image)
+plt.show()

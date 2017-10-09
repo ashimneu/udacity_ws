@@ -1,0 +1,2 @@
+To not commit a file during git commit, list name of the file inside 
+.gitignore file.

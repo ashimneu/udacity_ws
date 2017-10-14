@@ -1,6 +1,12 @@
 import numpy as np
 import cv2
 
+#Check if rock sample is visible to Rover & return either True or False
+'''def rock_is_visible(binary_img):
+    if (np.count_nonzero(binary_img) >= 40):
+        return True
+    return False'''
+
 # Identify pixels above the threshold
 # Threshold of RGB > 160 does a nice job of identifying ground pixels only
 def color_thresh(img, rgb_thresh_l=(0, 0, 0), rgb_thresh_u =(255,255,255)):
@@ -69,7 +75,6 @@ def perspect_transform(img, src, dst):
 
     M = cv2.getPerspectiveTransform(src, dst)
     warped = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))# keep same size as input image
-
     return warped
 
 
@@ -92,21 +97,23 @@ def perception_step(Rover):
     # 2) Apply perspective transform
     warped_img = perspect_transform(Rover.img, source, destination)
 
-    # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
-    rgb_thresh_terrain_l = (160,160,160)
-    rgb_thresh_rocksample_l = (50,110,0)
-    rgb_thresh_rocksample_u = (250,250,75)
-    rgb_thresh_obstacle_l = (0,0,0) # <-------------fix rgb values!
-    rgb_thresh_obstacle_u = (200,100,200) # <-------------fix rgb values!
+    #Lower & upper bound RGB values for threshold application
+    rgb_thresh_terrain_l = (160,160,160)#RGB lower bound values for navigable terrain
+    rgb_thresh_rocksample_l = (50,110,0)#lower bound values for rock sample
+    rgb_thresh_rocksample_u = (250,250,75)#upper bound values for rock sample
+    rgb_thresh_obstacle_l = (0,0,0)#lower bound values for obstacles
+    rgb_thresh_obstacle_u = (200,100,200) #upper bound values for obstacle
 
-    terrain_img = color_thresh(warped_img, rgb_thresh_terrain_l)
-    rocksample_img = color_thresh(warped_img, rgb_thresh_rocksample_l, rgb_thresh_rocksample_u)
-    obstacle_img = color_thresh(warped_img, rgb_thresh_obstacle_l, rgb_thresh_obstacle_u)
+    # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
+    terrain_img = color_thresh(warped_img, rgb_thresh_terrain_l) * 255
+    rocksample_img = color_thresh(warped_img, rgb_thresh_rocksample_l, rgb_thresh_rocksample_u) * 255
+    obstacle_img = (1 - np.float32(color_thresh(warped_img, rgb_thresh_terrain_l)))*255
+
 
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
-    Rover.vision_image[:,:,0] = obstacle_img
-    Rover.vision_image[:,:,1] = rocksample_img
-    Rover.vision_image[:,:,2] = terrain_img
+    Rover.vision_image[:,:,0] = obstacle_img #binary image for obstacle
+    Rover.vision_image[:,:,1] = rocksample_img #binary image for rock sample
+    Rover.vision_image[:,:,2] = terrain_img #binary image for navigable terrain
 
     # 5) Convert map image pixel values to rover-centric pixel
     x_pixel_t, y_pixel_t = rover_coords(terrain_img)
@@ -124,7 +131,18 @@ def perception_step(Rover):
     Rover.worldmap[y_world_t, x_world_t, 2] += 1
 
     # 8) Convert rover-centric pixel positions to polar coordinates
-    Rover.nav_dists, Rover.nav_angles = to_polar_coords(x_pixel_t,y_pixel_t)
+    polar_dists_t, polar_angles_t = to_polar_coords(x_pixel_t,y_pixel_t)
 
+    polar_dists_r, polar_angles_r = to_polar_coords(x_pixel_r, y_pixel_r)
+
+    Rover.nav_angles = polar_angles_r
+
+    #If rock sample is visible, send rocksample angles for steering
+    #This has been disabled because it produced undesired rover movements
+    #probably because of skewed image of rocksample in worldmap
+    '''if (rock_is_visible(rocksample_img) == True):
+        Rover.nav_angles = polar_angles_r
+    else:
+        Rover.nav_angles =  polar_angles_t'''
 
     return Rover

@@ -1,3 +1,5 @@
+# All of the following codes were obtained from Udacity Robotics Nanodegree program
+
 # Do the necessary imports
 import argparse
 import shutil

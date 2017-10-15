@@ -7,11 +7,11 @@
 
 
 
-#  Search and Sample Return Project
+##  Search and Sample Return Project
 
 
-### Notebook Analysis
-1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
+## Notebook Analysis
+### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
 
 
 - color_thresh() function was modified such that it now takes three parameter, i.e. image, lower and upper threshold for identification of rocksample and obstacle.
@@ -39,7 +39,7 @@ def color_thresh(img, rgb_thresh_l=(0, 0, 0), rgb_thresh_u =(255,255,255)): #rbg
     return color_select
 ```
 
-2. Populate the process_image() function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap. Run process_image() on your test data using the moviepy functions provided to create video output of your result.
+### 2. Populate the process_image() function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap. Run process_image() on your test data using the moviepy functions provided to create video output of your result.
 
 - Following lines wered added inside process_image() function.
 
@@ -81,16 +81,12 @@ def color_thresh(img, rgb_thresh_l=(0, 0, 0), rgb_thresh_u =(255,255,255)): #rbg
 ```
 
 - Here, after obtaining binary images that identify each of navigable terrain, rock sample and obstacle, the pixel in the images were converted to rover-centric pixel coordinates using rover_coords() function. x_pixel & y_pixel coordinates for each of the three cases further translated to coordinates in top-down view frame, i.e. world coordinates using pix_to_world() function. These world coordinates were fed to data.worldmap to display them in the video.
-- Rover_Project_Test_Notebook:                                                                                                                             
-https://github.com/ashimneu/udacity_ws/blob/master/RoboND-Rover-Project/code/Rover_Project_Test_Notebook.ipynb
-- Test output video:                                                                                                                                                    
-https://github.com/ashimneu/udacity_ws/blob/master/RoboND-Rover-Project/output/test_mapping.mp4
-
-
+- Please find Rover_Project_Test_Notebook.ipynb and test_mapping.mp4 output video  in the directory containing this file:                                                                                                                             
 
 
 ## Autonomous Navigation and Mapping
-1. Fill in the perception_step() (at the bottom of the perception.py script) and decision_step() (in decision.py) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
+
+### 1. Fill in the perception_step() (at the bottom of the perception.py script) and decision_step() (in decision.py) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
 
 
 
@@ -102,7 +98,7 @@ https://github.com/ashimneu/udacity_ws/blob/master/RoboND-Rover-Project/output/t
 - Finally, rover-centric pixel coordinates, which were initially in cartesian coordinates, were finally converted to rover-centric polar coordinates using to_polar_coords() to eventually calculate rover steering angle.
 
 
-2. Launching in autonomous mode your rover can navigate and map autonomously. Explain your results and how you might improve them in your writeup.
+### 2. Launching in autonomous mode your rover can navigate and map autonomously. Explain your results and how you might improve them in your writeup.
 
 
 
@@ -118,5 +114,4 @@ https://github.com/ashimneu/udacity_ws/blob/master/RoboND-Rover-Project/output/t
 - For this project, I  followed the instructions that were provided to simply pass the project. I was unable to work on decision.py, however, I hope to keep working on this project when time permits to improve the overall perception and decision making for the autonomous navigation of the rover. 
 - If I were to pursue this project further I would implement a proportional controller to slow the rover down in the event that it sees a rock. And, to steer it towards the rock, I'd pass angles values of pixles of rock's image in polar coordinates to Rover.nav_angles.
 - I'd would work on obstacle avoidance too.
-- Submission files are located in following link:
-https://github.com/ashimneu/udacity_ws/tree/master/RoboND-Rover-Project/code
+- Please find drive_rover.py, supporting_functions.py, decision.py and perception.py in the directory containig this file.

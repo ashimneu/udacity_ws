@@ -84,8 +84,12 @@ def perception_step(Rover):
     # TODO:
     # NOTE: camera image is coming to you in Rover.img
     # 1) Define source and destination points for perspective transform
+    world_size = 200 # size of the world map
+    scale = 10 # reduction factor of a 1m x 1m square box of a grid on world map to a pixel on robo-centric pixel coordinates map
+
     bottom_offset = 6
     dst_size = 5
+
     image = Rover.img
     source = np.float32([[14, 140], [301 ,140],[200, 96], [118, 96]])
     destination = np.float32([[image.shape[1]/2 - dst_size, image.shape[0] - bottom_offset],
@@ -121,9 +125,9 @@ def perception_step(Rover):
     x_pixel_o, y_pixel_o = rover_coords(obstacle_img)
 
     # 6) Convert rover-centric pixel values to world coordinates
-    x_world_t, y_world_t = pix_to_world(x_pixel_t, y_pixel_t, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.world_size, Rover.scale)
-    x_world_r, y_world_r = pix_to_world(x_pixel_r, y_pixel_r, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.world_size, Rover.scale)
-    x_world_o, y_world_o = pix_to_world(x_pixel_o, y_pixel_o, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.world_size, Rover.scale)
+    x_world_t, y_world_t = pix_to_world(x_pixel_t, y_pixel_t, Rover.pos[0], Rover.pos[1], Rover.yaw, world_size, scale)
+    x_world_r, y_world_r = pix_to_world(x_pixel_r, y_pixel_r, Rover.pos[0], Rover.pos[1], Rover.yaw, world_size, scale)
+    x_world_o, y_world_o = pix_to_world(x_pixel_o, y_pixel_o, Rover.pos[0], Rover.pos[1], Rover.yaw, world_size, scale)
 
     # 7) Update Rover worldmap (to be displayed on right side of screen)
     Rover.worldmap[y_world_o, x_world_o, 0] += 1
@@ -135,7 +139,7 @@ def perception_step(Rover):
 
     polar_dists_r, polar_angles_r = to_polar_coords(x_pixel_r, y_pixel_r)
 
-    Rover.nav_angles = polar_angles_r
+    Rover.nav_angles = polar_angles_t
 
     #If rock sample is visible, send rocksample angles for steering
     #This has been disabled because it produced undesired rover movements
